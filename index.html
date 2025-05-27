@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Xuất Dữ Liệu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-around">
+
+    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Form Xuất Dữ Liệu</h2>
+
+        <form id="exportForm" class="space-y-5">
+            <!-- Token -->
+            <div>
+                <label for="token" class="block text-gray-700 font-medium mb-2">Token</label>
+                <input type="text" id="token" name="token"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Nhập token..." required />
+            </div>
+
+            <!-- API URL -->
+            <div>
+                <label for="pdoneIds" class="block text-gray-700 font-medium mb-2">Danh sách mã pDone CBNV</label>
+                <textarea rows="10" id="pdoneIds" name="pdoneIds"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="ABC ABC" required></textarea>
+            </div>
+
+
+
+            <!-- Nút Xuất -->
+            <div>
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition duration-200">
+                    Xuất Dữ Liệu
+                </button>
+            </div>
+        </form>
+        <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg mt-4">
+            <h1 class="text-2xl font-bold mb-4">Bảng dữ liệu bài đăng</h1>
+            <div id="table-container" class="overflow-x-auto">
+                <table class="min-w-full text-sm text-left border border-gray-300">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="border px-4 py-2">Mã pdoneId</th>
+                            <th class="border px-4 py-2">Text</th>
+                            <th class="border px-4 py-2">Video</th>
+                            <th class="border px-4 py-2">Film</th>
+                        </tr>
+                    </thead>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getLastWeekISO() {
+            const now = new Date();
+
+            // Ngày đầu tuần này (Thứ Hai)
+            const dayOfWeek = now.getDay(); // 0 (CN) - 6 (T7)
+            const diffToMonday = (dayOfWeek + 6) % 7; // số ngày lùi về Thứ Hai
+            const thisMonday = new Date(now);
+            thisMonday.setDate(now.getDate() - diffToMonday);
+            thisMonday.setHours(0, 0, 0, 0);
+
+            // Ngày đầu tuần trước
+            const lastMonday = new Date(thisMonday);
+            lastMonday.setDate(thisMonday.getDate() - 7);
+
+            // Ngày cuối tuần trước (Chủ Nhật)
+            const lastSunday = new Date(thisMonday);
+            lastSunday.setDate(thisMonday.getDate() - 1);
+            lastSunday.setHours(23, 59, 59, 999);
+
+            return {
+                start_time: lastMonday.toISOString(),
+                end_time: lastSunday.toISOString()
+            };
+        }
+        async function fetchPostsByUser(token, userId, startTime, endTime) {
+            const postTypes = ['text', 'video', 'film'];
+
+            const results = await Promise.all(postTypes.map(async (type) => {
+                const url = `https://cloud.vdone.vn/api/admin/feed/post/list?page=1&pageSize=10&postType=${type}&query=${userId}&createdAtFrom=${startTime}&createdAtTo=${endTime}&isDeleted=false`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) throw new Error(`API ${type} lỗi: ${response.status}`);
+                    const data = await response.json();
+
+                    return {
+                        userId,
+                        type,
+                        success: true,
+                        data
+                    };
+
+                } catch (error) {
+                    return {
+                        userId,
+                        type,
+                        success: false,
+                        error: error.message
+                    };
+                }
+            }));
+
+            return results;
+        }
+
+        async function fetchAllUsersPosts(token, userIds, startTime, endTime) {
+            const allResults = [];
+
+            for (const userId of userIds) {
+                const userResults = await fetchPostsByUser(token, userId, startTime, endTime);
+                allResults.push(...userResults);
+            }
+            let newResults = []
+            allResults.forEach(userPost => {
+                newResults.push({ pdoneId: userPost.userId, type: userPost.type, total: userPost.data.data.total })
+            })
+
+            const grouped = {};
+
+            newResults.forEach(item => {
+                const { pdoneId, type, total } = item;
+                if (!grouped[pdoneId]) {
+                    grouped[pdoneId] = { pdoneId };
+                }
+                grouped[pdoneId][type] = total;
+            });
+
+            const result = Object.values(grouped);
+            let html = `
+        <table class="min-w-full text-sm text-left border border-gray-300">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="border px-4 py-2">Mã pdoneId</th>
+              <th class="border px-4 py-2">Text</th>
+              <th class="border px-4 py-2">Video</th>
+              <th class="border px-4 py-2">Film</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+            result.forEach(row => {
+                html += `
+          <tr>
+            <td class="border px-4 py-2 font-medium">${row.pdoneId}</td>
+            <td class="border px-4 py-2 text-center">${row.text}</td>
+            <td class="border px-4 py-2 text-center">${row.video}</td>
+            <td class="border px-4 py-2 text-center">${row.film}</td>
+          </tr>
+        `;
+            });
+
+            html += `</tbody></table>`;
+            document.getElementById("table-container").innerHTML = html;
+            console.log("Kết quả:", grouped);
+            return allResults;
+        }
+        document.getElementById('exportForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const token = document.getElementById('token').value;
+            const pDoneIds = document.getElementById('pdoneIds').value;
+            const ids = pDoneIds.split("\n");
+            const { start_time, end_time } = getLastWeekISO();
+            await fetchAllUsersPosts(token, ids, start_time, end_time)
+        });
+    </script>
+
+</body>
+
+</html>
