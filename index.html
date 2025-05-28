@@ -8,10 +8,36 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-around">
+<body class="bg-gray-100 ">
+  <nav class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <!-- Logo -->
+        <div class="flex-shrink-0 flex items-center">
+          <span class="text-xl font-bold text-blue-600">VDone Tool</span>
+        </div>
 
-    <div class=" p-8  w-3/4 ">
-        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Form Xuất Dữ Liệu</h2>
+        <!-- Menu Links -->
+        <div class="hidden md:flex space-x-8 items-center">
+          <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium">Thống kê bài đăng</a>
+          <a href="oder.html" class="text-gray-700 hover:text-blue-600 font-medium">Đơn hàng mới</a>
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="md:hidden flex items-center">
+          <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+    <div class="p-8  w-3/4 m-auto">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Form Xuất Dữ Liệu Bài Đăng</h2>
 
        <div class="flex gap-x-4 ">
          <form id="exportForm" class="bg-white space-y-5 w-1/4 rounded-2xl shadow-lg p-4">
