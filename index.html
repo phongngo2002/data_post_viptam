@@ -48,7 +48,21 @@
                     class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Nhập token..." required />
             </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <!-- Ngày bắt đầu -->
+                <div>
+                    <label for="startDate" class="block text-sm font-medium text-gray-700 mb-1">Ngày bắt đầu:</label>
+                    <input type="date" id="startDate"
+                    class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                </div>
 
+                <!-- Ngày kết thúc -->
+                <div>
+                    <label for="endDate" class="block text-sm font-medium text-gray-700 mb-1">Ngày kết thúc:</label>
+                    <input type="date" id="endDate"
+                    class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                </div>
+                </div>
             <!-- API URL -->
             <div>
                 <label for="pdoneIds" class="block text-gray-700 font-medium mb-2">Danh sách mã pDone CBNV</label>
@@ -136,6 +150,7 @@
                     };
 
                 } catch (error) {
+                    
                     return {
                         userId,
                         type,
@@ -143,11 +158,22 @@
                         error: error.message
                     };
                 }
-            }));
+            })) ;
 
             return results;
         }
+        const start = document.getElementById("startDate");
+        const end = document.getElementById("endDate");
+        start.addEventListener('change', function () {
+            // Khi người dùng chọn ngày bắt đầu, đặt min cho ngày kết thúc
+            const selectedStartDate = this.value;
+            end.min = selectedStartDate;
 
+            // Nếu ngày kết thúc hiện tại nhỏ hơn ngày bắt đầu thì xóa
+            if (end.value && end.value < selectedStartDate) {
+            end.value = "";
+            }
+        });
         async function fetchAllUsersPosts(token, userIds, startTime, endTime) {
             const allResults = [];
 
@@ -206,7 +232,25 @@
             const token = document.getElementById('token').value;
             const pDoneIds = document.getElementById('pdoneIds').value;
             const ids = pDoneIds.split("\n");
-            const { start_time, end_time } = getLastWeekISO();
+            let { start_time, end_time } = getLastWeekISO();
+            const start = document.getElementById("startDate").value;
+            const end = document.getElementById("endDate").value;
+            console.log(start);
+            
+            if(start && end){
+                    const [startYear, startMonth,startDay] = start.split('-');
+                    const [endYear, endMonth,endDay ] = end.split('-');
+
+                    // Tạo đối tượng Date theo giờ Việt Nam (UTC+7)
+                    const startDate = new Date(`${startYear}-${startMonth}-${startDay}T00:00:00+07:00`);
+                    
+                    const endDate = new Date(`${endYear}-${endMonth}-${endDay}T23:59:59.999+07:00`);
+
+                    // Chuyển về ISO UTC
+                    start_time = startDate.toISOString(); // Tương đương 17h hôm trước UTC
+                    end_time = endDate.toISOString();     // Tương đương 16:59:59.999 UTC
+
+            }
             await fetchAllUsersPosts(token, ids, start_time, end_time)
         });
     </script>
