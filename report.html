@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Xuất Dữ Liệu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 ">
+  <nav class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <!-- Logo -->
+        <div class="flex-shrink-0 flex items-center">
+          <span class="text-xl font-bold text-blue-600">VDone Tool</span>
+        </div>
+
+        <!-- Menu Links -->
+        <div class="hidden md:flex space-x-8 items-center">
+          <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium">Thống kê bài đăng</a>
+          <a href="order.html" class="text-gray-700 hover:text-blue-600 font-medium">Đơn hàng mới</a>
+          <a href="report.html" class="text-gray-700 hover:text-blue-600 font-medium">Báo cáo hằng ngày</a>
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="md:hidden flex items-center">
+          <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+      <div class="p-8  w-3/4 m-auto">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Form xuất báo cáo hằng ngày bộ phận Admin</h2>
+
+       <div class="flex gap-x-4 ">
+         <form id="exportForm" class="bg-white space-y-5 w-1/4 rounded-2xl shadow-lg p-4">
+            <!-- Token -->
+            <div>
+                <label for="token" class="block text-gray-700 font-medium mb-2">Token</label>
+                <input type="text" id="token" name="token"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Nhập token..." required />
+            </div>
+       
+            <!-- Nút Xuất -->
+            <div>
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition duration-200">
+                    Xuất báo cáo
+                </button>
+            </div>
+        </form>
+        <div class="bg-white p-4 rounded-2xl shadow-lg w-3/4">
+        <div class=" mx-auto  p-6 space-y-4 text-gray-800">
+            <h2 class="text-xl font-semibold text-blue-600">Báo cáo ngày 28/05/2025</h2>
+            
+            <ul class="list-decimal list-inside space-y-2">
+                <!-- <li>Đại lý Miền Bắc của chị Hiền ngày 28/05 còn lại <span class="font-semibold text-green-600">720.000 D-One</span></li>
+                <li>Đại lý MarketHome ngày 28/05 đang có <span class="font-semibold text-green-600">435.766 D-One</span></li>
+                <li>Tài khoản gốc của chị Hiền đang có <span class="font-semibold text-green-600">82.500.000 D-One</span></li>
+                <li>Kho tổng đang có <span class="font-semibold text-green-600">133.200.394 D-One</span></li>
+                <li>Đại lý Xu Hà Nội 1 của a Dương đang có <span class="font-semibold text-green-600">318.021 xu</span></li>
+                <li>Người dùng đăng ký tài khoản VDONE: <span class="font-semibold text-blue-600">18.197</span></li>
+                <li>Số lượt tải app: <span class="font-semibold text-blue-600">24.319</span></li>
+                <li>Tài khoản đã kích hoạt sổ gạo: <span class="font-semibold text-blue-600">165</span></li>
+                <li>Đơn hàng Sổ gạo: <span class="font-semibold text-blue-600">545</span></li> -->
+            </ul>
+            </div>
+        </div>
+       </div>
+    </div>
+
+</body>
+
+</html>

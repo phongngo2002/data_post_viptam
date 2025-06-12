@@ -21,6 +21,7 @@
         <div class="hidden md:flex space-x-8 items-center">
           <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium">Thống kê bài đăng</a>
           <a href="order.html" class="text-gray-700 hover:text-blue-600 font-medium">Đơn hàng mới</a>
+          <a href="report.html" class="text-gray-700 hover:text-blue-600 font-medium">Báo cáo hằng ngày</a>
         </div>
 
         <!-- Mobile menu button -->
@@ -163,7 +164,7 @@ VN987654321"
                 :
                 '',
                 shippingFee: infoCustomer[0].vndOriginalShippingFee,
-                desc: infoCustomer[0].shippingType !='PICKUP' ? product[0].snapProduct.name +' * '+product[0].quantity : '',
+                desc: infoCustomer[0].shippingType !='PICKUP' ? 'Sổ gạo VDONE - ' +product[0].snapProduct.name +' * '+product[0].quantity : '',
                 note: infoCustomer[0].shippingType !='PICKUP' ? ` Đơn hàng VDONE ${order.orderNumber}` : ''
             }
         })
