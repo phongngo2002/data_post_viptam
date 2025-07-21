@@ -194,7 +194,7 @@
                 if (!grouped[pdoneId]) {
                     grouped[pdoneId] = { pdoneId };
                 }
-                grouped[pdoneId][type] = total;
+                grouped[pdoneId][type] = +total;
             });
 
             const result = Object.values(grouped);
@@ -206,6 +206,7 @@
               <th class="border px-4 py-2">Text</th>
               <th class="border px-4 py-2">Video</th>
               <th class="border px-4 py-2">Film</th>
+              <th class="border px-4 py-2">Tổng</th>
             </tr>
           </thead>
           <tbody>
@@ -218,6 +219,7 @@
             <td class="border px-4 py-2 text-center">${row.text}</td>
             <td class="border px-4 py-2 text-center">${row.video}</td>
             <td class="border px-4 py-2 text-center">${row.film}</td>
+            <td class="border px-4 py-2 text-center">${row.film + row.text  + row.film}</td>
           </tr>
         `;
             });
