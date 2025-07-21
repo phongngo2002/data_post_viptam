@@ -194,7 +194,7 @@
                 if (!grouped[pdoneId]) {
                     grouped[pdoneId] = { pdoneId };
                 }
-                grouped[pdoneId][type] = +total;
+                grouped[pdoneId][type] = total;
             });
 
             const result = Object.values(grouped);
