@@ -99,7 +99,8 @@
         </div>
        </div>
     </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script>
         function getLastWeekISO() {
             const now = new Date();
@@ -125,44 +126,44 @@
                 end_time: lastSunday.toISOString()
             };
         }
-        async function fetchPostsByUser(token, userId, startTime, endTime) {
-            const postTypes = ['text', 'video', 'film'];
+            async function fetchPostsByUser(token, userId, startTime, endTime) {
+                const postTypes = ['text', 'video', 'film'];
 
-            const results = await Promise.all(postTypes.map(async (type) => {
-                const url = `https://cloud.vdone.vn/api/admin/feed/post/list?page=1&pageSize=10&postType=${type}&query=${userId}&createdAtFrom=${startTime}&createdAtTo=${endTime}&isDeleted=false`;
+                const results = await Promise.all(postTypes.map(async (type) => {
+                    const url = `https://cloud.vdone.vn/api/admin/feed/post/list?page=1&pageSize=10&postType=${type}&query=${userId}&createdAtFrom=${startTime}&createdAtTo=${endTime}&isDeleted=false`;
 
-                try {
-                    const response = await fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
+                    try {
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
 
-                    if (!response.ok) throw new Error(`API ${type} lỗi: ${response.status}`);
-                    const data = await response.json();
+                        if (!response.ok) throw new Error(`API ${type} lỗi: ${response.status}`);
+                        const data = await response.json();
 
-                    return {
-                        userId,
-                        type,
-                        success: true,
-                        data
-                    };
+                        return {
+                            userId,
+                            type,
+                            success: true,
+                            data
+                        };
 
-                } catch (error) {
-                    
-                    return {
-                        userId,
-                        type,
-                        success: false,
-                        error: error.message
-                    };
-                }
-            })) ;
+                    } catch (error) {
+                        
+                        return {
+                            userId,
+                            type,
+                            success: false,
+                            error: error.message
+                        };
+                    }
+                })) ;
 
-            return results;
-        }
+                return results;
+            }
         const start = document.getElementById("startDate");
         const end = document.getElementById("endDate");
         start.addEventListener('change', function () {
@@ -211,8 +212,9 @@
           </thead>
           <tbody>
       `;
-
+            let dataExcel = [];
             result.forEach(row => {
+                dataExcel.push([row.text,row.video,row.film]);
                 html += `
           <tr>
             <td class="border px-4 py-2 font-medium">${row.pdoneId}</td>
@@ -223,7 +225,12 @@
           </tr>
         `;
             });
+            const worksheet = XLSX.utils.aoa_to_sheet(dataExcel);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Danh sách");
 
+            // Xuất file Excel
+            XLSX.writeFile(workbook, "danh_sach.xlsx");
             html += `</tbody></table>`;
             document.getElementById("table-container").innerHTML = html;
             console.log("Kết quả:", grouped);
@@ -238,7 +245,6 @@
             let { start_time, end_time } = getLastWeekISO();
             const start = document.getElementById("startDate").value;
             const end = document.getElementById("endDate").value;
-            console.log(start);
             
             if(start && end){
                     const [startYear, startMonth,startDay] = start.split('-');
