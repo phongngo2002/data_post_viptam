@@ -63,6 +63,11 @@
                     <input type="date" id="endDate"
                     class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" />
                 </div>
+                <div class="flex gap-x-2">
+                    <label for="exportExcel" class="block text-sm font-medium text-gray-700 mb-1">Xuất Excel:</label>
+                    <input type="radio" id="exportExcel"  name="exportExcel" value="1"
+                    class="border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                </div>
                 </div>
             <!-- API URL -->
             <div>
@@ -166,6 +171,7 @@
             }
         const start = document.getElementById("startDate");
         const end = document.getElementById("endDate");
+        const exportExcel = document.getElementById('exportExcel');
         start.addEventListener('change', function () {
             // Khi người dùng chọn ngày bắt đầu, đặt min cho ngày kết thúc
             const selectedStartDate = this.value;
@@ -225,12 +231,15 @@
           </tr>
         `;
             });
+            if(exportExcel.checked){
             const worksheet = XLSX.utils.aoa_to_sheet(dataExcel);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Danh sách");
 
             // Xuất file Excel
             XLSX.writeFile(workbook, "danh_sach.xlsx");
+            }
+        
             html += `</tbody></table>`;
             document.getElementById("table-container").innerHTML = html;
             console.log("Kết quả:", grouped);
