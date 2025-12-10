@@ -93,10 +93,12 @@
                 <table class="min-w-full text-sm text-left border border-gray-300">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th class="border px-4 py-2">Mã PDONEID</th>
-                            <th class="border px-4 py-2">BÀI VIẾT</th>
-                            <th class="border px-4 py-2">Video</th>
-                            <th class="border px-4 py-2">Film</th>
+                                 <th class="border px-4 py-2">Mã pdone</th>
+                                <th class="border px-4 py-2">Bài viết</th>
+                                <th class="border px-4 py-2">Video</th>
+                                <th class="border px-4 py-2">Ảnh</th>
+                                <th class="border px-4 py-2">Tạp chí</th>
+                                <th class="border px-4 py-2">Tổng</th>
                         </tr>
                     </thead>
 
@@ -132,7 +134,7 @@
             };
         }
             async function fetchPostsByUser(token, userId, startTime, endTime) {
-                const postTypes = ['text', 'video', 'film'];
+                const postTypes = ['text', 'video', 'film','message','magazine'];
 
                 const results = await Promise.all(postTypes.map(async (type) => {
                     const url = `https://cloud.vdone.vn/api/admin/feed/post/list?page=1&pageSize=10&postType=${type}&query=${userId}&createdAtFrom=${startTime}&createdAtTo=${endTime}&isDeleted=false`;
@@ -209,10 +211,11 @@
         <table class="min-w-full text-sm text-left border border-gray-300">
           <thead class="bg-gray-100">
             <tr>
-              <th class="border px-4 py-2">Mã pdoneId</th>
+              <th class="border px-4 py-2">Mã pdone</th>
               <th class="border px-4 py-2">Text</th>
               <th class="border px-4 py-2">Video</th>
-              <th class="border px-4 py-2">Film</th>
+              <th class="border px-4 py-2">Ảnh</th>
+              <th class="border px-4 py-2">Tạp chí</th>
               <th class="border px-4 py-2">Tổng</th>
             </tr>
           </thead>
@@ -220,14 +223,15 @@
       `;
             let dataExcel = [];
             result.forEach(row => {
-                dataExcel.push([row.text,row.video,row.film]);
+                dataExcel.push([row.text,row.video,row.message,row.magazine]);
                 html += `
           <tr>
             <td class="border px-4 py-2 font-medium">${row.pdoneId}</td>
             <td class="border px-4 py-2 text-center">${row.text}</td>
             <td class="border px-4 py-2 text-center">${row.video}</td>
-            <td class="border px-4 py-2 text-center">${row.film}</td>
-            <td class="border px-4 py-2 text-center">${Number(row.film + row.text + row.video)}</td>
+            <td class="border px-4 py-2 text-center">${row.message}</td>
+            <td class="border px-4 py-2 text-center">${row.magazine}</td>
+            <td class="border px-4 py-2 text-center">${Number(row.text + row.video + row.message + row.magazine)}</td>
           </tr>
         `;
             });
