@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giao diện dễ thương</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-amber-50 to-purple-50 p-6">
+    <!-- Bước 1: Câu hỏi admin -->
+    <div id="question-step" class="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-pink-100 text-center">
+      <h2 class="text-xl font-semibold text-pink-700 mb-4">Admin có đẹp trai không? 😎</h2>
+      <div class="flex justify-center gap-4">
+        <button id="btn-co" class="bg-pink-400 text-white px-4 py-2 rounded-xl shadow hover:scale-105 transition">Có 💖</button>
+        <button id="btn-ratco" class="bg-pink-500 text-white px-4 py-2 rounded-xl shadow hover:scale-105 transition">Rất có 💘</button>
+      </div>
+    </div>
+
+    <!-- Bước 2: Giao diện nhập nội dung -->
+    <div id="main-interface" class="hidden w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-pink-100">
+      <header class="flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 rounded-full bg-pink-200 flex items-center justify-center shadow-inner">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-pink-600">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.312-2.733C5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold text-pink-700">Chúc bạn một ngày tốt lành!</h1>
+          <p class="text-sm text-pink-500">Nhập mã PDONE và chờ mình chút nhé 💌</p>
+        </div>
+      </header>
+
+      <main>
+        <input
+          id="cute-input"
+          type="text"
+          placeholder="Nhập mã PDONE của bạn vào nhé..."
+          class="w-full px-4 py-3 rounded-xl border-2 border-pink-100 focus:outline-none focus:ring-2 focus:ring-pink-200 placeholder-pink-300 shadow-sm text-pink-700"
+        />
+
+        <div class="mt-4 flex items-center justify-between gap-3">
+          <button
+            id="save-btn"
+            class="flex items-center gap-2 px-4 py-2 rounded-2xl font-medium shadow-md bg-pink-500 text-white hover:scale-105 transition-transform"
+          >
+            <span>Gửi</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.312-2.733C5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+            </svg>
+          </button>
+
+          <div id="count" class="text-sm text-pink-500">0/200</div>
+        </div>
+
+        <div id="saved-message" class="hidden mt-3 inline-flex items-center gap-2 bg-pink-50 border border-pink-100 text-pink-600 text-sm rounded-full px-3 py-1 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.312-2.733C5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+          </svg>
+          <span id="content">Chờ mình chút nhé ✨</span>
+        </div>
+      </main>
+
+      <footer class="mt-6 text-xs text-pink-400">Dữ liệu được làm mới mỗi 8h40 và 17h20 hằng ngày ✨</footer>
+    </div>
+
+    <script>
+      const input = document.getElementById('cute-input');
+      const count = document.getElementById('count');
+      const saveBtn = document.getElementById('save-btn');
+      const content = document.getElementById("content");
+      const savedMsg = document.getElementById('saved-message');
+      const mainInterface = document.getElementById('main-interface');
+      const questionStep = document.getElementById('question-step');
+      const btnCo = document.getElementById('btn-co');
+      const btnRatCo = document.getElementById('btn-ratco');
+
+      input.addEventListener('input', () => {
+        count.textContent = `${input.value.length}/200`;
+      });
+
+      saveBtn.addEventListener('click',async () => {
+        if (input.value.trim() === '') return;
+        savedMsg.classList.remove('hidden');
+        const res = await fetch('https://68e333918e14f4523dacbc45.mockapi.io/api/posts/posts');
+        const data = await res.json();
+        const post = data.find(item => item.code == input.value);
+        if(post){
+            content.innerHTML = 'Tổng số bài đăng của bạn là: '+post.total+' ✨'
+        }else{
+            content.innerHTML = 'Mình không tìm thấy mã PDONE của bạn thử lại mã khác nha ✨'
+        }
+        
+      });
+
+      function showMain() {
+        questionStep.classList.add('hidden');
+        mainInterface.classList.remove('hidden');
+      }
+
+      btnCo.addEventListener('click', showMain);
+      btnRatCo.addEventListener('click', showMain);
+    </script>
+  </body>
+</html>

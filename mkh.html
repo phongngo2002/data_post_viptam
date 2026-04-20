@@ -1,0 +1,124 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Xuất Dữ Liệu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 ">
+  <nav class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <!-- Logo -->
+        <div class="flex-shrink-0 flex items-center">
+          <span class="text-xl font-bold text-blue-600">VDone Tool</span>
+        </div>
+
+        <!-- Menu Links -->
+        <div class="hidden md:flex space-x-8 items-center">
+          <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium">Thống kê bài đăng</a>
+          <a href="sogao.html" class="text-gray-700 hover:text-blue-600 font-medium">D-one Đơn hàng</a>
+          <a href="mkh.html" class="text-gray-700 hover:text-blue-600 font-medium">D-one thẻ MarketHome</a>
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="md:hidden flex items-center">
+          <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="max-w-6xl mx-auto p-6">
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">D-one đơn hàng</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+
+      <!-- Input JSON -->
+      <div class="bg-white rounded-2xl shadow p-5">
+        <h2 class="text-xl font-semibold mb-4 text-gray-700">Nhập dữ liệu JSON</h2>
+        <textarea
+          id="data"
+          class="w-full h-64 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+          placeholder='Dán JSON vào đây...'>
+        </textarea>
+
+        <button
+          onclick="processJSON()"
+          class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-xl font-medium transition">
+          Xuất Excel
+        </button>
+      </div>
+
+      <!-- Output -->
+
+
+    </div>
+  </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script>
+    
+    function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+    }
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
+    function processJSON() {
+        const value = document.querySelector("#data").value;
+        const data = JSON.parse(value);
+
+
+        function totalPacks(walletPacks){
+            let totalPack = 0;
+            walletPacks.forEach(wallet => {
+                totalPack += wallet.amount;
+            });
+
+            return totalPack;
+        }
+        let dataExcel = [];
+        const newData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach((item,index) =>  {
+            dataExcel.push([formatDate(item.createdAt),
+            item.user.fullName ? item.user.fullName : item.user.displayName,
+            item.user.pDoneId,
+            item.walletPacks.length ? totalPacks(item.walletPacks) : 0,
+            item.dOne,
+            item.givingDOne
+        ])
+        })
+            const worksheet = XLSX.utils.aoa_to_sheet(dataExcel);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Danh sách");
+
+            // Xuất file Excel
+            XLSX.writeFile(workbook, "d-one-mkh-"+formatDate(new Date())+".xlsx");
+    }
+    
+
+
+</script>
+</body>
+
+</html>

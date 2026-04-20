@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table id="table">
+
+    </table>
+    <script>
+        fetch("https://cloud.vdone.vn/ecom/api/admin/v1/product/list?page=1&pageSize=150&isReviewed=true&rejected=false", {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYUlkIjoyMiwidG9rZW5UeXBlIjoxLCJtZXRhZGF0YSI6eyJhZG1pblR5cGUiOjMsInBlcm1pc3Npb25zIjpbeyJ0eXBlcyI6WyJBbGwiXSwicmVzb3VyY2UiOiJQcm9kdWN0In1dfSwiaWF0IjoxNzY4OTg2NzA5LCJleHAiOjE3Njg5ODg1MDl9.U1PsUBnjNMfmOZNpYSsCBpqe_rU2Y07ScjXpBeDup2A`,
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(res => res.json()).then(data => {
+                            console.log(data);
+
+                            // document.querySelector("#table").innerHTML = data.products.map((index,item) => {
+                            //     return `
+                            //     <tr>
+                            //             <td>${index} </td>
+                            //             <td>${item.name} </td>
+                            //         </tr>
+                            //     `;
+                            // }).join("")
+                        });
+    </script>
+</body>
+</html>
