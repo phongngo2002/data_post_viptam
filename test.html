@@ -1,33 +1,246 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>JSON Tool Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver/dist/FileSaver.min.js"></script>
 </head>
-<body>
-    <table id="table">
+<body class="bg-gray-100 p-6">
 
-    </table>
-    <script>
-        fetch("https://cloud.vdone.vn/ecom/api/admin/v1/product/list?page=1&pageSize=150&isReviewed=true&rejected=false", {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYUlkIjoyMiwidG9rZW5UeXBlIjoxLCJtZXRhZGF0YSI6eyJhZG1pblR5cGUiOjMsInBlcm1pc3Npb25zIjpbeyJ0eXBlcyI6WyJBbGwiXSwicmVzb3VyY2UiOiJQcm9kdWN0In1dfSwiaWF0IjoxNzY4OTg2NzA5LCJleHAiOjE3Njg5ODg1MDl9.U1PsUBnjNMfmOZNpYSsCBpqe_rU2Y07ScjXpBeDup2A`,
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(res => res.json()).then(data => {
-                            console.log(data);
+<div class=" mx-auto space-y-6 w-full">
 
-                            // document.querySelector("#table").innerHTML = data.products.map((index,item) => {
-                            //     return `
-                            //     <tr>
-                            //             <td>${index} </td>
-                            //             <td>${item.name} </td>
-                            //         </tr>
-                            //     `;
-                            // }).join("")
-                        });
-    </script>
+  <!-- PHẦN 1 -->
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <h2 class="text-xl font-bold mb-3">🔹 Phần 1: Lấy danh sách ID</h2>
+
+    <textarea id="jsonInput1"
+      class="w-full border rounded-lg p-3"
+      rows="5"
+      placeholder="Nhập JSON có chứa id..."
+    ></textarea>
+
+    <button onclick="extractIds()" 
+      class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-lg">
+      Lấy danh sách ID
+    </button>
+
+    <pre id="idResult" class="mt-4 bg-gray-900 text-green-400 p-3 rounded-lg text-sm"></pre>
+  </div>
+
+
+  <!-- PHẦN 2 -->
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <h2 class="text-xl font-bold mb-3">🔹 Phần 2: Nhập nhiều JSON</h2>
+
+    <div id="jsonList" class="space-y-3">
+      <div class="flex gap-2">
+        <textarea class="json-item w-full border rounded-lg p-2" rows="3" placeholder="Nhập JSON..."></textarea>
+        <button onclick="removeItem(this)" class="bg-red-500 text-white px-3 rounded-lg">X</button>
+      </div>
+    </div>
+
+    <div class="flex gap-3 mt-3">
+      <button onclick="addItem()" class="bg-green-500 text-white px-4 py-2 rounded-lg">
+        + Thêm
+      </button>
+
+      <button onclick="collectData()" class="bg-blue-500 text-white px-4 py-2 rounded-lg">
+        Lấy dữ liệu
+      </button>
+    </div>
+
+        <div  class="mt-6 text-sm text-gray-800 bg-white">
+                <div class="bg-white p-4 rounded-2xl shadow-lg w-full">
+            <h1 class="text-2xl font-bold mb-4">Bảng dữ liệu đơn hàng</h1>
+            <div id="table-container" class="overflow-x-auto">
+                <table class="min-w-full text-sm text-left border border-gray-300">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="border px-4 py-2">Ngày tạo đơn</th>
+                            <th class="border px-4 py-2">Tên sản phẩm</th>
+                            <th class="border px-4 py-2">Số lượng</th>
+                            <th class="border px-4 py-2">Mã Pdone</th>
+                              <th class="border px-4 py-2">Mã đơn hàng</th>
+                            <th class="border px-4 py-2">Tên khách hàng</th>
+                            <th class="border px-4 py-2">Số điện thoại</th>
+                            <th class="border px-4 py-2">Địa chỉ</th>
+                            <th class="border px-4 py-2">PTGH</th>
+                            <th class="border px-4 py-2">Phí ship</th>
+                            <th class="border px-4 py-2">Mô tả</th>
+                            <th class="border px-4 py-2">Ghi chú</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="result2">
+
+                    </tbody>
+
+            </div>
+        </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ===== PHẦN 1 =====
+  function extractIds() {
+    const input = document.getElementById('jsonInput1').value;
+    const output = document.getElementById('idResult');
+
+    try {
+      const data = JSON.parse(input);
+
+      let ids = [];
+
+     data.forEach(item => {
+        ids.push(item.id)
+     })
+
+      output.textContent = JSON.stringify(ids, null, 2);
+
+    } catch (e) {
+      output.textContent = "JSON không hợp lệ!";
+    }
+  }
+
+
+  // ===== PHẦN 2 =====
+  function addItem() {
+    const container = document.getElementById('jsonList');
+
+    const div = document.createElement('div');
+    div.className = "flex gap-2";
+
+    div.innerHTML = `
+      <textarea class="json-item w-full border rounded-lg p-2" rows="3" placeholder="Nhập JSON..."></textarea>
+      <button onclick="removeItem(this)" class="bg-red-500 text-white px-3 rounded-lg">X</button>
+    `;
+
+    container.appendChild(div);
+  }
+
+  function removeItem(btn) {
+    btn.parentElement.remove();
+  }
+
+async  function collectData() {
+    const items = document.querySelectorAll('.json-item');
+    const output = document.getElementById('result2');
+
+    let result = [];
+
+    items.forEach((item, index) => {
+      try {
+        const parsed = JSON.parse(item.value);
+        result.push(parsed);
+      } catch {
+        result.push({ error: `Ô ${index + 1} JSON lỗi` });
+      }
+    });
+      const orders = result.map(res => {
+             const {order} = res;
+             const {items: product,shipments: infoCustomer} = order
+                return {
+                thumbnail: order.snapProduct.thumbnai?.[0],
+                createdAt: (new Date(order.createdAt)).toLocaleDateString('vi-VN'),
+                productName: product[0].snapProduct.name,
+                quantity:product[0].quantity,
+                pDoneId:order.customer.pDoneId,
+                phoneNumber: infoCustomer[0].snapAddress.telephone,
+                orderCode: order.orderNumber,
+                name: infoCustomer[0].snapAddress.name,
+                address: infoCustomer[0].shippingType =='PICKUP' ? 
+                infoCustomer[0]?.snapWarehouse.address 
+                +', '+infoCustomer[0]?.snapWarehouse.ward.name
+                +', '+infoCustomer[0]?.snapWarehouse.district.name
+                +', '+infoCustomer[0]?.snapWarehouse.province.name
+                :
+                infoCustomer[0]?.snapAddress.address 
+                +', '+infoCustomer[0]?.snapAddress.ward.name
+                +', '+infoCustomer[0]?.snapAddress.district.name
+                +', '+infoCustomer[0]?.snapAddress.province.name
+                ,
+                shipperType: infoCustomer[0].shippingType =='PICKUP'
+                ?
+                'Lấy hàng tài S-Kho'
+                :
+                '',
+                shippingFee: infoCustomer[0].vndOriginalShippingFee,
+                desc: infoCustomer[0].shippingType !='PICKUP' ? 'Sổ gạo VDONE - ' +product[0].snapProduct.name +' * '+product[0].quantity : '',
+                note: infoCustomer[0].shippingType !='PICKUP' ? ` Đơn hàng VDONE ${order.orderNumber}` : ''
+            }
+    })
+        output.innerHTML = orders.map(row => {
+            return  `
+          <tr>
+                            <th class="border px-4 py-2">${row.createdAt}</th>
+                            <th class="border px-4 py-2">${row.productName}</th>
+                            <th class="border px-4 py-2">${row.quantity}</th>
+                            <th class="border px-4 py-2">${row.pDoneId}</th>
+                            <th class="border px-4 py-2">${row.orderCode}</th>
+                            <th class="border px-4 py-2">${row.name}</th>
+                            <th class="border px-4 py-2">${row.phoneNumber}</th>
+                            <th class="border px-4 py-2">${row.address}</th>
+                            <th class="border px-4 py-2">${row.shipperType}</th>
+                            <th class="border px-4 py-2">${row.shippingFee}</th>
+                            <th class="border px-4 py-2">${row.desc}</th>
+                            <th class="border px-4 py-2">${row.note}</th>
+          </tr>
+        `;
+        }).join("")
+
+         const workbook = new ExcelJS.Workbook();
+         const sheet = workbook.addWorksheet("Data");
+
+        // Header
+            sheet.columns = [
+            { header: "STT", key: "STT", width: 20 },
+            { header: "Tên sản phẩm", key: "name", width: 30 },
+            { header: "Hình ảnh", key: "image", width: 20 },
+            { header: "Giá", key: "price", width: 20 },
+            { header: "Số lượng", key: "quantity", width: 20 },
+            { header: "Tổng bán", key: "sum", width: 20 }
+
+        ];
+         let rowIndex = 2;
+    
+        for (const [i, item] of orders.entries()) {
+            const row = sheet.addRow({
+            STT: i + 1 || "",
+            name: item.name || "",
+            });
+
+            // Nếu có ảnh (giả sử field là image)
+            if (item.image) {
+            try {
+                const base64 = await toBase64(item.image);
+
+                const imageId = workbook.addImage({
+                base64: base64,
+                extension: "png",
+                });
+
+                sheet.addImage(imageId, {
+                tl: { col: 2, row: rowIndex - 1 },
+                ext: { width: 80, height: 80 },
+                });
+
+                sheet.getRow(rowIndex).height = 60;
+            } catch (e) {
+                console.log("Lỗi ảnh:", item.image);
+            }
+            }
+
+            rowIndex++;
+        }
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        saveAs(new Blob([buffer]), "data.xlsx");
+        }
+</script>
+
 </body>
 </html>

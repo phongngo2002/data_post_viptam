@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Xuất Dữ Liệu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 ">
+  <nav class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <!-- Logo -->
+        <div class="flex-shrink-0 flex items-center">
+          <span class="text-xl font-bold text-blue-600">VDone Tool</span>
+        </div>
+
+        <!-- Menu Links -->
+        <div class="hidden md:flex space-x-8 items-center">
+          <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium">Thống kê bài đăng</a>
+          <a href="sogao.html" class="text-gray-700 hover:text-blue-600 font-medium">D-one Đơn hàng</a>
+          <a href="mkh.html" class="text-gray-700 hover:text-blue-600 font-medium">D-one thẻ MarketHome</a>
+          <a href="mkh.html" class="text-gray-700 hover:text-blue-600 font-medium">So sánh mã PDONE</a>
+
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="md:hidden flex items-center">
+          <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="max-w-6xl mx-auto p-6">
+    <!-- Title -->
+
+<div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow">
+  <h1 class="text-xl font-bold mb-4">So sánh 2 danh sách mã</h1>
+
+  <div class="grid grid-cols-2 gap-4">
+    <textarea id="list1" class="border p-3 h-60 rounded" placeholder="Nhập danh sách 1 (mỗi dòng 1 mã)"></textarea>
+    <textarea id="list2" class="border p-3 h-60 rounded" placeholder="Nhập danh sách 2 (mỗi dòng 1 mã)"></textarea>
+  </div>
+
+  <button onclick="compare()" 
+    class="mt-4 bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+    So sánh
+  </button>
+
+  <div class="grid grid-cols-2 gap-4 mt-6">
+    <div>
+      <h2 class="font-semibold mb-2">Chỉ có ở danh sách 1</h2>
+      <textarea id="only1" class="border p-3 h-60 w-full rounded"></textarea>
+    </div>
+
+    <div>
+      <h2 class="font-semibold mb-2">Chỉ có ở danh sách 2</h2>
+      <textarea id="only2" class="border p-3 h-60 w-full rounded"></textarea>
+    </div>
+  </div>
+</div>
+  </div>
+<script>
+function formatList(text) {
+  return text
+    .split(/\s+/) // tách theo xuống dòng hoặc khoảng trắng
+    .map(x => x.trim())
+    .filter(x => x !== "");
+}
+
+function compare() {
+  const list1 = formatList(document.getElementById("list1").value);
+  const list2 = formatList(document.getElementById("list2").value);
+
+  const set1 = new Set(list1);
+  const set2 = new Set(list2);
+
+  const only1 = list1.filter(x => !set2.has(x));
+  const only2 = list2.filter(x => !set1.has(x));
+
+  document.getElementById("only1").value = only1.join("\n");
+  document.getElementById("only2").value = only2.join("\n");
+}
+</script>
+</body>
+
+</html>
