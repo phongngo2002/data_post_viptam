@@ -125,7 +125,17 @@
   function removeItem(btn) {
     btn.parentElement.remove();
   }
+async function toBase64(url) {
+  const response = await fetch(url);
+  const blob = await response.blob();
 
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
 async  function collectData() {
     const items = document.querySelectorAll('.json-item');
     const output = document.getElementById('result2');
@@ -143,11 +153,14 @@ async  function collectData() {
       const orders = result.map(res => {
              const {order} = res;
              const {items: product,shipments: infoCustomer} = order
+             console.log(product[0].snapVariant.thumbnail[0]);
+             
                 return {
-                thumbnail: order.snapProduct.thumbnai?.[0],
+                thumbnail: product[0].snapVariant.thumbnail[0],
                 createdAt: (new Date(order.createdAt)).toLocaleDateString('vi-VN'),
                 productName: product[0].snapProduct.name,
                 quantity:product[0].quantity,
+                productPrice: product[0].vndPrice,
                 pDoneId:order.customer.pDoneId,
                 phoneNumber: infoCustomer[0].snapAddress.telephone,
                 orderCode: order.orderNumber,
@@ -192,53 +205,123 @@ async  function collectData() {
         `;
         }).join("")
 
-         const workbook = new ExcelJS.Workbook();
-         const sheet = workbook.addWorksheet("Data");
+          const workbook = new ExcelJS.Workbook();
+          const sheet = workbook.addWorksheet("Danh sách sản phẩm");
 
-        // Header
-            sheet.columns = [
-            { header: "STT", key: "STT", width: 20 },
+          // Header
+          sheet.columns = [
+            { header: "STT", key: "STT", width: 10 },
             { header: "Tên sản phẩm", key: "name", width: 30 },
             { header: "Hình ảnh", key: "image", width: 20 },
-            { header: "Giá", key: "price", width: 20 },
-            { header: "Số lượng", key: "quantity", width: 20 },
-            { header: "Tổng bán", key: "sum", width: 20 }
+            { header: "Giá", key: "price", width: 15 },
+            { header: "Số lượng", key: "quantity", width: 15 },
+            { header: "Tổng bán", key: "sum", width: 15 }
+          ];
+          // Style header đẹp
+          const headerRow = sheet.getRow(1);
 
-        ];
-         let rowIndex = 2;
-    
-        for (const [i, item] of orders.entries()) {
-            const row = sheet.addRow({
-            STT: i + 1 || "",
-            name: item.name || "",
+          headerRow.font = {
+            bold: true,
+            size: 12,
+            color: { argb: 'FFFFFF' }
+          };
+
+          headerRow.alignment = {
+            vertical: 'middle',
+            horizontal: 'center'
+          };
+
+          headerRow.height = 25;
+
+          // Màu nền header (xanh)
+          headerRow.eachCell((cell) => {
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: '4F81BD' }
+            };
+
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' }
+            };
+          });
+          // Style header
+          sheet.getRow(1).font = { bold: true };
+          sheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+          let rowIndex = 2;
+
+          for (let i = 0; i < orders.length; i++) {
+            const item = orders[i];
+
+            sheet.addRow({
+              STT: i + 1,
+              name: item.productName || "",
+              price: item.productPrice || 0,
+              quantity: item.quantity || 0,
+              sum: (item.productPrice || 0) * (item.quantity || 0)
             });
 
-            // Nếu có ảnh (giả sử field là image)
-            if (item.image) {
-            try {
-                const base64 = await toBase64(item.image);
+            // Chèn ảnh
+            if (item.thumbnail) {
+              try {
+                const base64 = await toBase64(item.thumbnail);
 
                 const imageId = workbook.addImage({
-                base64: base64,
-                extension: "png",
+                  base64: base64,
+                  extension: "png",
                 });
 
                 sheet.addImage(imageId, {
-                tl: { col: 2, row: rowIndex - 1 },
-                ext: { width: 80, height: 80 },
+                  tl: { col: 2.2, row: rowIndex - 0.8 },
+                  ext: { width: 70, height: 70 },
                 });
 
                 sheet.getRow(rowIndex).height = 60;
-            } catch (e) {
-                console.log("Lỗi ảnh:", item.image);
-            }
+
+              } catch (e) {
+                console.log(e);
+                
+                console.log("Không tải được ảnh:", item.image);
+              }
             }
 
             rowIndex++;
-        }
+          }
+          sheet.eachRow((row, rowNumber) => {
+          row.eachCell((cell) => {
+            cell.alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+              wrapText: true
+            };
 
-        const buffer = await workbook.xlsx.writeBuffer();
-        saveAs(new Blob([buffer]), "data.xlsx");
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' }
+            };
+          });
+        });
+          // Format tiền
+          sheet.getColumn("price").numFmt = '#,##0 "₫"';
+          sheet.getColumn("sum").numFmt = '#,##0 "₫"';
+          const totalSum = orders.reduce((acc, item) => {
+          return acc + (item.productPrice || 0) * (item.quantity || 0);
+        }, 0);
+
+        const totalRow = sheet.addRow({
+          name: "TỔNG",
+          sum: totalSum
+        });
+
+          totalRow.font = { bold: true };
+          const buffer = await workbook.xlsx.writeBuffer();
+          saveAs(new Blob([buffer]), "danh_sach_san_pham.xlsx");
         }
 </script>
 

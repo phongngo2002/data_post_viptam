@@ -5,7 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Form Xuất Dữ Liệu</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver/dist/FileSaver.min.js"></script>
 </head>
 
 <body class="bg-gray-100 ">
@@ -20,6 +22,7 @@
         <!-- Menu Links -->
         <div class="hidden md:flex space-x-8 items-center">
          <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium">Thống kê bài đăng</a>
+          <a href="order.html" class="text-gray-700 hover:text-blue-600 font-medium">Thống kê đơn hàng</a>
           <a href="sogao.html" class="text-gray-700 hover:text-blue-600 font-medium">D-one Đơn hàng</a>
           <a href="mkh.html" class="text-gray-700 hover:text-blue-600 font-medium">D-one thẻ MarketHome</a>
           <a href="pdone.html" class="text-gray-700 hover:text-blue-600 font-medium">So sánh mã PDONE</a>
@@ -39,26 +42,49 @@
     </div>
   </nav>
     <div class="p-8  w-3/4 m-auto">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Nhập danh sách ID đơn hàng</h2>
-    <!-- Nhập Token -->
-    <label for="token" class="block text-sm font-medium text-gray-700 mb-1">Nhập Bearer Token:</label>
-    <input id="token" type="text" placeholder="Nhập token ở đây..." 
-      class="w-full mb-4 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-    <!-- Nhập Danh sách mã đơn hàng -->
-    <label for="orderIds" class="block text-gray-700 font-medium mb-2">Danh sách ID (mỗi dòng 1 mã):</label>
-    <textarea id="orderIds" rows="8" placeholder="VN123456789
-VN987654321"
-      class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y"></textarea>
+        <div class=" mx-auto space-y-6 w-full">
 
-    <button
-     onclick="fetchOrderInfo()"
-      class="mt-4 w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
-    >
-      Hiển thị thông tin
+  <!-- PHẦN 1 -->
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <h2 class="text-xl font-bold mb-3">🔹 Phần 1: Lấy danh sách ID</h2>
+
+    <textarea id="jsonInput1"
+      class="w-full border rounded-lg p-3"
+      rows="5"
+      placeholder="Nhập JSON có chứa id..."
+    ></textarea>
+
+    <button onclick="extractIds()" 
+      class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-lg">
+      Lấy danh sách ID
     </button>
 
-    <!-- Khu vực kết quả -->
-    <div id="result" class="mt-6 text-sm text-gray-800 bg-white">
+    <pre id="idResult" class="mt-4 bg-gray-900 text-green-400 p-3 rounded-lg text-sm"></pre>
+  </div>
+
+
+  <!-- PHẦN 2 -->
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <h2 class="text-xl font-bold mb-3">🔹 Phần 2: Nhập nhiều JSON</h2>
+
+    <div id="jsonList" class="space-y-3">
+      <div class="flex gap-2">
+        <textarea class="json-item w-full border rounded-lg p-2" rows="3" placeholder="Nhập JSON..."></textarea>
+        <button onclick="removeItem(this)" class="bg-red-500 text-white px-3 rounded-lg">X</button>
+      </div>
+    </div>
+
+    <div class="flex gap-3 mt-3">
+      <button onclick="addItem()" class="bg-green-500 text-white px-4 py-2 rounded-lg">
+        + Thêm
+      </button>
+
+      <button onclick="collectData()" class="bg-blue-500 text-white px-4 py-2 rounded-lg">
+        Lấy dữ liệu
+      </button>
+    </div>
+
+        <div  class="mt-6 text-sm text-gray-800 bg-white">
                 <div class="bg-white p-4 rounded-2xl shadow-lg w-full">
             <h1 class="text-2xl font-bold mb-4">Bảng dữ liệu đơn hàng</h1>
             <div id="table-container" class="overflow-x-auto">
@@ -66,9 +92,11 @@ VN987654321"
                     <thead class="bg-gray-100">
                         <tr>
                             <th class="border px-4 py-2">Ngày tạo đơn</th>
+                            <th class="border px-4 py-2">Mã sản phẩm</th>
                             <th class="border px-4 py-2">Tên sản phẩm</th>
                             <th class="border px-4 py-2">Số lượng</th>
                             <th class="border px-4 py-2">Mã Pdone</th>
+                              <th class="border px-4 py-2">Mã đơn hàng</th>
                             <th class="border px-4 py-2">Tên khách hàng</th>
                             <th class="border px-4 py-2">Số điện thoại</th>
                             <th class="border px-4 py-2">Địa chỉ</th>
@@ -79,71 +107,107 @@ VN987654321"
                         </tr>
                     </thead>
 
+                    <tbody id="result2">
+
+                    </tbody>
+
             </div>
         </div>
     </div>
+  </div>
+
+</div>
     </div>
 
-  <script>
-   async function fetchOrderInfo() {
-      const token = document.getElementById('token').value.trim();
-      const textarea = document.getElementById('orderIds');
-      const resultBox = document.getElementById('result');
-      const ids = textarea.value.trim().split('\n').map(i => i.trim()).filter(i => i !== '');
+<script>
+  // ===== PHẦN 1 =====
+  
+  function extractIds() {
+    const input = document.getElementById('jsonInput1').value;
+    const output = document.getElementById('idResult');
 
-      if (!token) {
-        resultBox.innerHTML = `<p class="text-red-600">Vui lòng nhập token để xác thực.</p>`;
-        return;
-      }
+    try {
+      const data = JSON.parse(input);
 
-      if (ids.length === 0) {
-        resultBox.innerHTML = `<p class="text-red-600">Vui lòng nhập ít nhất 1 mã đơn hàng.</p>`;
-        return;
-      }
+      let ids = [];
 
-      resultBox.innerHTML = `<p class="text-gray-700">⏳ Đang lấy dữ liệu, vui lòng đợi...</p>`;
+     data.filter(item => item.orderStatus != "WAITING_FOR_PAYMENT" && item.orderStatus != "CANCELED" && item.payment.dOneTotalPrice > 0).forEach(item => {
+        ids.push(item.id)
+        addItem(item.id);
+     })
 
+      output.textContent = JSON.stringify(ids, null, 2);
+
+
+
+    } catch (e) {
+      output.textContent = "JSON không hợp lệ!";
+    }
+  }
+
+
+  // ===== PHẦN 2 =====
+  function addItem(id = 0) {
+    const container = document.getElementById('jsonList');
+
+    const div = document.createElement('div');
+    div.className = "flex gap-2";
+
+    div.innerHTML = `
+      <textarea class="json-item w-full border rounded-lg p-2" rows="3" placeholder="Nhập JSON...">https://cloud.vdone.vn/ecom/api/v1/admin/order/${id}?orderId=${id}</textarea>
+      <button onclick="removeItem(this)" class="bg-red-500 text-white px-3 rounded-lg">X</button>
+    `;
+
+    container.appendChild(div);
+  }
+
+  function removeItem(btn) {
+    btn.parentElement.remove();
+  }
+async function toBase64(url) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
+async  function collectData() {
+    const items = document.querySelectorAll('.json-item');
+    const output = document.getElementById('result2');
+
+    let result = [];
+
+    items.forEach((item, index) => {
       try {
-        const requests = ids.map(orderId => {
-          const url = `https://cloud.vdone.vn/ecom/api/v1/admin/order/logistic-list?page=1&pageSize=10&orderBy=updatedAt&orderType=desc&query=${encodeURIComponent(orderId)}`;
-          return fetch(url, {
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
-            }
-          })
-            .then(res => res.json())
-            .then(data => ({ orderId, data }))
-            .catch(error => ({ orderId, error: error.message }));
-        });
-
-        const results = await Promise.all(requests);
-
-        const oderIds = results.map(item => {
-            const order = item.data.orders[0]
-            return order.id
-        })
-
-        const requestOderDetails = oderIds.map(orderId => {
-          const urlDetail = `https://cloud.vdone.vn/ecom/api/v1/admin/order/${orderId}?orderId=${orderId}`;
-          return fetch(urlDetail, {
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
-            }
-          })
-            .then(res => res.json())
-            .catch(error => ({ orderId, error: error.message }));
-        });
-
-        const requestDetail = await Promise.all(requestOderDetails);
-        const orders = requestDetail.map(detail => {;
-            const {order} = detail;
-            const {items: product,shipments: infoCustomer} = order
-            return {
+        const parsed = JSON.parse(item.value);
+        result.push(parsed);
+      } catch {
+        result.push({ error: `Ô ${index + 1} JSON lỗi` });
+      }
+    });
+      const orders = result.map(res => {
+             const {order} = res;
+             const {items: product,shipments: infoCustomer} = order
+             console.log(product[0].snapVariant.thumbnail[0]);
+             
+                return {
+                thumbnail: product[0].snapVariant.thumbnail[0],
+                productId: product[0].id,
                 createdAt: (new Date(order.createdAt)).toLocaleDateString('vi-VN'),
                 productName: product[0].snapProduct.name,
                 quantity:product[0].quantity,
+                productPrice: product[0].vndPrice,
                 pDoneId:order.customer.pDoneId,
                 phoneNumber: infoCustomer[0].snapAddress.telephone,
                 orderCode: order.orderNumber,
@@ -168,34 +232,12 @@ VN987654321"
                 desc: infoCustomer[0].shippingType !='PICKUP' ? 'Sổ gạo VDONE - ' +product[0].snapProduct.name +' * '+product[0].quantity : '',
                 note: infoCustomer[0].shippingType !='PICKUP' ? ` Đơn hàng VDONE ${order.orderNumber}` : ''
             }
-        })
-        console.log(orders);
-         
-   let html = `
-        <table class="min-w-full text-sm text-left border border-gray-300">
-          <thead class="bg-gray-100">
-            <tr>
-                            <th class="border px-4 py-2">Ngày tạo đơn</th>
-                            <th class="border px-4 py-2">Tên sản phẩm</th>
-                            <th class="border px-4 py-2">Số lượng</th>
-                            <th class="border px-4 py-2">Mã Pdone</th>
-                            <th class="border px-4 py-2">Mã đơn hàng</th>
-                            <th class="border px-4 py-2">Tên khách hàng</th>
-                            <th class="border px-4 py-2">Số điện thoại</th>
-                            <th class="border px-4 py-2">Địa chỉ</th>
-                            <th class="border px-4 py-2">PTGH</th>
-                            <th class="border px-4 py-2">Phí ship</th>
-                            <th class="border px-4 py-2">Mô tả</th>
-                            <th class="border px-4 py-2">Ghi chú</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-
-            orders.forEach(row => {
-                html += `
+    })
+        output.innerHTML = orders.map(row => {
+            return  `
           <tr>
                             <th class="border px-4 py-2">${row.createdAt}</th>
+                            <th class="border px-4 py-2">${row.productId}</th>
                             <th class="border px-4 py-2">${row.productName}</th>
                             <th class="border px-4 py-2">${row.quantity}</th>
                             <th class="border px-4 py-2">${row.pDoneId}</th>
@@ -209,16 +251,117 @@ VN987654321"
                             <th class="border px-4 py-2">${row.note}</th>
           </tr>
         `;
+        }).join("")
+
+          const workbook = new ExcelJS.Workbook();
+          const sheet = workbook.addWorksheet("Danh sách sản phẩm");
+
+          // Header
+          sheet.columns = [
+            { header: "STT", key: "STT", width: 10 },
+            { header: "Tên sản phẩm", key: "name", width: 30 },
+            { header: "Hình ảnh", key: "image", width: 20 },
+            { header: "Giá", key: "price", width: 15 },
+            { header: "Số lượng", key: "quantity", width: 15 },
+            { header: "Tổng bán", key: "sum", width: 15 }
+          ];
+          // Style header đẹp
+          const headerRow = sheet.getRow(1);
+
+          headerRow.font = {
+            bold: true,
+            size: 12,
+            color: { argb: 'FFFFFF' }
+          };
+
+          headerRow.alignment = {
+            vertical: 'middle',
+            horizontal: 'center'
+          };
+
+          headerRow.height = 25;
+
+          // Màu nền header (xanh)
+          headerRow.eachCell((cell) => {
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: '4F81BD' }
+            };
+
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' }
+            };
+          });
+          // Style header
+          sheet.getRow(1).font = { bold: true };
+          sheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+          let rowIndex = 2;
+
+          for (let i = 0; i < orders.length; i++) {
+            const item = orders[i];
+
+            sheet.addRow({
+              STT: i + 1,
+              name: item.productName || "",
+              price: item.productPrice || 0,
+              quantity: item.quantity || 0,
+              sum: (item.productPrice || 0) * (item.quantity || 0)
             });
 
-            html += `</tbody></table>`;
-            resultBox.innerHTML = html;
-      } catch (e) {
-        resultBox.innerHTML = `<p class="text-red-600">Đã xảy ra lỗi khi xử lý dữ liệu.</p>`;
-        console.error(e);
-      }
-    }
-  </script>
+            // Chèn ảnh
+            if (item.thumbnail) {
+              try {
+                const base64 = await toBase64(item.thumbnail);
+
+                const imageId = workbook.addImage({
+                  base64: base64,
+                  extension: "png",
+                });
+
+                sheet.addImage(imageId, {
+                  tl: { col: 2.2, row: rowIndex - 0.8 },
+                  ext: { width: 70, height: 70 },
+                });
+
+                sheet.getRow(rowIndex).height = 60;
+
+              } catch (e) {
+                console.log(e);
+                
+                console.log("Không tải được ảnh:", item.image);
+              }
+            }
+
+            rowIndex++;
+          }
+          sheet.eachRow((row, rowNumber) => {
+          row.eachCell((cell) => {
+            cell.alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+              wrapText: true
+            };
+
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' }
+            };
+          });
+        });
+          // Format tiền
+          sheet.getColumn("price").numFmt = '#,##0 "₫"';
+          sheet.getColumn("sum").numFmt = '#,##0 "₫"';
+          const buffer = await workbook.xlsx.writeBuffer();
+          saveAs(new Blob([buffer]), "nhap-hang-tra-khach - "+formatDate(new Date())+".xlsx");
+        }
+</script>
 </body>
 
 </html>
