@@ -41,10 +41,10 @@
       </div>
     </div>
   </nav>
-    <div class="p-8 flex  w-3/4 m-auto">
+    <div class="p-8  w-3/4 m-auto">
 
   <!-- PHẦN 1 -->
-  <div class="w-1/4 bg-white p-5 rounded-2xl shadow">
+  <div class="bg-white p-5 rounded-2xl shadow">
     <h2 class="text-xl font-bold mb-3">🔹 Phần 1: Lấy danh sách ID</h2>
 
     <textarea id="jsonInput1"
@@ -63,7 +63,7 @@
 
 
   <!-- PHẦN 2 -->
-  <div class="w-3/4 bg-white p-5 rounded-2xl shadow">
+  <div class="bg-white p-5 rounded-2xl shadow">
     <h2 class="text-xl font-bold mb-3">🔹 Phần 2: Nhập nhiều JSON</h2>
 
     <div id="jsonList" class="space-y-3">
@@ -118,7 +118,540 @@
 
 <script>
   // ===== PHẦN 1 =====
-  
+  const winmarts = [
+    {
+      "name": "Nước tẩy trang L'Oreal Micellar dưỡng ẩm 3 in 1 chai 400ml",
+      "link": "https://winmart.vn/products/loreal-tay-trang-micellar-duong-am-400ml--s10321638?storeCode=1650&storeGroupCode=1998"
+    },
+    {
+      "name": "Thùng 30 gói mì tôm chua cay Hảo Hảo Vina Acecook 75g",
+      "link": "https://winmart.vn/products/hao-hao-mi-tom-chua-cay-75g--s10007893?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Mì gói ăn liền khoai tây vị xốt bò hầm Omachi thùng 30 gói x 80g",
+      "link": "https://winmart.vn/products/omachi-mi-dd-k.tay-xot-bo-ham-81g--s10007927"
+    },
+    {
+      "name": "Dầu ăn cao cấp Meizan GOLD 1L",
+      "link": "https://winmart.vn/products/meizan-dau-an-cao-cap-gold-1l--s10010069?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Dầu ăn Tường An Gold chai 1L",
+      "link": "https://winmart.vn/products/tuong-an-dau-an-gold-1l--s10600400?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước tương tỏi ớt Chinsu 330ml",
+      "link": "https://winmart.vn/products/chin-su-nuoc-tuong-toi-ot-330ml--s10141669?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Hạt nêm Aji-ngon Ajinomoto gói 900g",
+      "link": "https://winmart.vn/products/aji-ngon-hat-nem-goi-900g--s10009213?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Hạt nêm thịt thăn, xương ống, tủy Knorr 900g",
+      "link": "https://winmart.vn/products/knorr-hat-nem-thit-bx-xuong-ong-900g--s10008782?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Tương ớt Chin Su chai 1kg",
+      "link": "https://winmart.vn/products/chin-su-tuong-ot-1kg--s10141747?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Ngũ cốc ăn sáng Milo Nestlé hộp 330g",
+      "link": "https://winmart.vn/products/milo-nestle-ngu-coc-an-sang-h300--s10015556?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Cà phê Cappuccino Trung Nguyên dừa hộp 216g",
+      "link": "https://winmart.vn/products/trung-nguyen-cafe-cappu-coconut-216g--s10150032?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Café Vinacafé 3in1 Gold Original 306g",
+      "link": "https://winmart.vn/products/vinacafe-cafe-3in1-gold-original-306g--s10196217?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Cà phê hòa tan đậm đà hài hòa 3 trong 1 Nescafé hộp 340g",
+      "link": "https://winmart.vn/products/nescafe-cafe-3in1-dam-da-hai-hoa-2016g--s10012783?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Cà phê hòa tan 3in1 G7 hộp 336g",
+      "link": "https://winmart.vn/products/g7-cafe-hoa-tan-3in1-336g-2116g--s10012822?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Trà gừng HotGinger Cozy hộp 200g",
+      "link": "https://winmart.vn/products/cozy-tra-gung-hotginger-hop-200g--s10012800?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Trà Nestea vị chanh Nestlé hộp 252g",
+      "link": "https://winmart.vn/products/nestea-tpbs-tra-vi-chanh-hop-195g--s10012782?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Ngũ cốc dinh dưỡng NutiFood gói 500g",
+      "link": "https://winmart.vn/products/nutifood-n.coc-dd-bo-sung-canxi-goi-500g--s10013307?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bánh Custas kem trứng Orion hộp 276g",
+      "link": "https://winmart.vn/products/custas-banh-cao-cap-orion-hop-282g--s10013503?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bánh Choco-Pie Orion hộp 396g",
+      "link": "https://winmart.vn/products/chocopie-banh-orion-hop-396g435.6g--s10013500?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Kẹo gum không đường hương Chanh Bạc Hà Xylitol hộp 145g",
+      "link": "https://winmart.vn/products/xylitol-keo-gum-limemint-137.8g130.5g--s10014529?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bánh bông lan cuốn kem vị lá dứa Solite hộp 360g",
+      "link": "https://winmart.vn/products/solite-banh-bl-cuon-la-dua-378g324g--s10013615?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Kẹo dẻo trái cây Haribo Goldbears gói 160g",
+      "link": "https://winmart.vn/products/haribo-keo-deo-goldbears-160g--s10014415"
+    },
+    {
+      "name": "Tăm bông Niva hũ hình NL 200 Que - Ah2",
+      "link": "https://winmart.vn/products/niva-bong-tai-hu-hinh-nl-200-que-ah2--s10020361"
+    },
+    {
+      "name": "Dầu gội Clear 9 thảo dược cổ truyền 630g",
+      "link": "https://winmart.vn/products/clear-dau-goi-9-thao-duoc-co-truyen-630g--s10171159"
+    },
+    {
+      "name": "Dầu gội Sunsilk óng mượt rạng ngời chai 650g",
+      "link": "https://winmart.vn/products/sunsilk-dau-goi-den-ong-a-650g--s10016798?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Dầu xả Sunsilk óng mượt rạng ngời 320g",
+      "link": "https://winmart.vn/products/sunsilk-dau-xa-ong-muot-rang-ngoi-320g--s10016819?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước rửa tay Lifebuoy Matcha và lô hội chai 450g",
+      "link": "https://winmart.vn/products/lifebuoy-nrt-matcha-nha-dam-500g450g--s10625551?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Kem đánh răng Sensodyne Freshmint 100g",
+      "link": "https://winmart.vn/products/sensodyne-kem-danh-rang-freshmint-100g--s10018362?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Kem đánh răng Closeup Diamond Attraction trắng răng 100g",
+      "link": "https://winmart.vn/products/closeup-kdr-kim-cuong-100g--s10018581?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước giặt Omo Comfort tinh dầu thơm túi 2,8kg",
+      "link": "https://winmart.vn/products/omo-ng-comfort-t.dau-thom-tui29kg2.8kg--s10161174?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước giặt Ariel hương sen nhài cửa trước 2.3kg",
+      "link": "https://winmart.vn/products/ariel-ng-huong-sen-nhai-cua-truoc-2.3kg--s10332739?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bột giặt Omo ngất ngây hồng 2,6kg",
+      "link": "https://winmart.vn/products/omo-bg-comfort-tdt-ngat-ngay-hong-26kg--s10617635?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước rửa chén bát Sunlight thiên nhiên muối khoáng và lô hội chai 750g",
+      "link": "https://winmart.vn/products/sunlight-nrc-thien-nhien-chai-750g--s10622318?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước rửa chén Gift hương chanh can 3,8kg",
+      "link": "https://winmart.vn/products/gift-nuoc-rua-chen-huong-chanh-38kg--s10019696?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bình xịt côn trùng Raid không mùi 600ml",
+      "link": "https://winmart.vn/products/raid-xit-con-trung-khong-mui-600ml--s10020078?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước Lau Sàn Sunlight Tinh Dầu Thảo Mộc Hương Hoa Bạc Hà 1kg",
+      "link": "https://winmart.vn/products/sunlight-nls-tdtm-hh-b.ha-re0121-1kg--s10170660?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước lau sàn hương lily Gift chai 1L",
+      "link": "https://winmart.vn/products/gift-nuoc-lau-san-huong-lily-1l--s10019677?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "VIM trắng sáng hương chanh sả 870ml",
+      "link": "https://winmart.vn/products/vim-tr.sang-h.chanh-sa-re0121-870ml--s10170677?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Viên treo bồn cầu Vim hương lavender 55g",
+      "link": "https://winmart.vn/products/vim-vien-treo-bon-cau-lavender-55g--s10613380?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Kem tẩy Sunlight chuyên dụng siêu sạch siêu sáng 690g",
+      "link": "https://winmart.vn/products/sunlight-kem-tay-chuyen-dung-690g--s10171184?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Thùng 36 hộp sữa đậu nành Fami canxi 200ml",
+      "link": "https://winmart.vn/products/fami-sua-dau-nanh-canxi-hop-6200ml--s10005315?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa đặc có đường Ông Thọ trắng lon 380g",
+      "link": "https://winmart.vn/products/vnm-ong-tho-sua-dac-trang-c.duong-380g--s10010460?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa tươi tiệt trùng hương dâu TH True Milk lốc 4 hộp x 180ml",
+      "link": "https://winmart.vn/products/thtrue-milk-sua-t.trung-h.-dau-180ml--s10010615?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Thức uống lúa mạch vị sô cô la Ovaltine lốc 4 hộp x 180ml",
+      "link": "https://winmart.vn/products/ovaltine-sua-l.mach-socola-x2canxi-180ml--s10010599?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Lốc 8 hộp sữa lúa mạch Nestle Milo 180ml",
+      "link": "https://winmart.vn/products/milo-sua-lua-mach-nestle-180ml8--s10196200?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Màng bọc thực phẩm Las Palms 30cm x 400m",
+      "link": "https://winmart.vn/products/laspalm-mang-boc-tp-30cmx400300m-dao--s10026587?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Gói 2 miếng cước inox chà nồi Scotch Brite 30g",
+      "link": "https://winmart.vn/products/scotch-brite-mieng-co-rua-inox-30gr--s10027131?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sáp thơm Glade hương chanh 180g",
+      "link": "https://winmart.vn/products/glade-sap-thom-huong-chanh-180g--s10019726?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Xịt phòng Glade hương lavender 280ml",
+      "link": "https://winmart.vn/products/glade-xit-phong-huong-lavender-280ml--s10019741?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Găng tay cao su tự nhiên Lock&Lock ETM801P cỡ L 39cm (Hồng)",
+      "link": "https://winmart.vn/products/ll-gang-tay-cao-su-39cm-hong-etm801p--s10026852?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Lốc 4 cuộn túi rác màu quai xách Inochi 46x63cm",
+      "link": "https://winmart.vn/products/inochi-lo4-tui-rac-tien-dung-mau-4663--s10604747?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bàn chải đánh răng P/S trẻ em 2-6 tuổi cao cấp",
+      "link": "https://winmart.vn/products/ps-bcdr-tre-em-superkid-2-6t--s10628562?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Đường mía thượng hạng Biên Hòa gói 1kg",
+      "link": "https://winmart.vn/products/bien-hoa-duong-mia-thuong-hang-1kg--s10009243?storeGroupCode=1998&storeCode=1535"
+    },
+    {
+      "name": "Bột Canh 14% Vifon gói 900g",
+      "link": "https://winmart.vn/products/vifon-bot-canh-14-900g--s10141401?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Tương cà Chinsu chai 500g",
+      "link": "https://winmart.vn/products/chin-su-tuong-ca-500g--s10141773?storeGroupCode=1998&storeCode=1535"
+    },
+    {
+      "name": "Bột ngọt (mì chính) Ajinomoto gói 1kg",
+      "link": "https://winmart.vn/products/ajinomoto-bot-ngot-mi-chinh-1kg--s10008599?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Muối chấm Tôm chua cay Hảo Hảo 120g",
+      "link": "https://winmart.vn/products/hao-hao-muoi-cham-tom-chua-cay-120g--s10181052?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Đậu xanh bóc vỏ Thu Dung gói 500g",
+      "link": "https://winmart.vn/products/thu-dung-dau-xanh-boc-vo-goi-500g--s10010324?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Rong biển giòn trộn khô gà Miwon gói 30g",
+      "link": "https://winmart.vn/products/miwon-rong-bien-gion-tron-kho-ga-30g40g--s10141362?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bột chiên xù Miwon gói 200g",
+      "link": "https://winmart.vn/products/miwon-bot-chien-xu-miwon-goi-200g--s10008570?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bột mì đa dụng Meizan gói 500g",
+      "link": "https://winmart.vn/products/meizan-bot-my-da-dung-500g-mb--s10010026?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa Tắm Atitude Romano 650g",
+      "link": "https://winmart.vn/products/romano-sua-tam-atitude-650g--s10017739?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa tắm Lifebuoy Thảo dược Hoa sen 800gr",
+      "link": "https://winmart.vn/products/lifebuoy-sua-tam-thao-duoc-hoa-sen-800gr--s10266343?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Dầu gội ROMANO VIP vision 650g",
+      "link": "https://winmart.vn/products/romano-dau-goi-vip-vision-650g--s10161784?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa rửa mặt Nivea sáng da ngọc trai 100g",
+      "link": "https://winmart.vn/products/nivea-sua-rua-mat-sang-da-ngoc-trai-100g--s10161338?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Giấy vệ sinh Watersilk 36m 10 cuộn",
+      "link": "https://winmart.vn/products/watersilk-giay-ve-sinh-36m-10-cuon--s10020662?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Băng vệ sinh Kotex Style siêu mỏng cánh 8 miếng",
+      "link": "https://winmart.vn/products/kotex-bvs-style-luoi-sieu-tham-smc-8--s10020131?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Băng vệ sinh Diana Sensi Ultra Thin Wings 8 miếng",
+      "link": "https://winmart.vn/products/diana-sensi-bvs-sieu-mong-canh-8m--s10020239?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Dung dịch vệ sinh phụ nữ Dạ Hương 120ml",
+      "link": "https://winmart.vn/products/da-huong-dung-dich-vs-phu-nu-120ml--s10600304?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Dung dịch vệ sinh phụ nữ Lactacyd ngày dài tươi mát 150ml",
+      "link": "https://winmart.vn/products/lactacyd-dd-vspn-odor-fress-150ml--s10324173?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa tắm nước hoa Enchanteur Romantic chai 650g",
+      "link": "https://winmart.vn/products/enchanteur-sua-tam-romantic-650g--s10017806?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước chấm Nam Ngư nhãn vàng chai 650ml",
+      "link": "https://winmart.vn/products/nam-ngu-nuoc-mam-nhan-vang-650ml--s10602829?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Đường vàng Biên Hòa thiên nhiên 1kg",
+      "link": "https://winmart.vn/products/bien-hoa-duong-mia-thien-nhien-1kg--s10401819?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Thùng 48 hộp sữa tươi tiệt trùng TH True Milk ít đường 180ml",
+      "link": "https://winmart.vn/products/thtrue-milk-sua-tuoi-tt-it-duong-180ml--s10010613?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Lăn khử mùi Nivea Men Silver Protect chai 50ml",
+      "link": "https://winmart.vn/products/nivea-lan-khu-mui-nam-phan-tu-bac-50ml--s10018697?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "        \nNước lau đa năng Sunlight chanh & sả sạch bóng kin kít 500ml",
+      "link": "https://winmart.vn/products/sunlight-nuoc-lau-da-nang-chanh-sa-500ml--s10171193?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Kem đánh răng trẻ em P/S hương cam 2-6 tuổi 45g",
+      "link": "https://winmart.vn/products/ps-kdr-tre-em-huong-cam-45g--s10601183?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước súc miệng Listerine Natural Green Tea 250ml",
+      "link": "https://winmart.vn/products/listerine-nsm-natural-green-tea-250ml--s10018477?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa tắm Dove hương hoa ngọt ngào chai 900g",
+      "link": "https://winmart.vn/products/dove-sua-tam-huong-hoa-ngot-ngao-900g--s10170934?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước xả vải Downy hương huyền bí túi 3L",
+      "link": "https://winmart.vn/products/downy-nuoc-xa-huyen-bi-tui-3l--s10160008?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Bánh quy bơ Danisa hộp 681g",
+      "link": "https://winmart.vn/products/danisa-banh-qui-bo-681g--s10056560?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa tắm Double Rich Eva's Secret hoa hồng 550g",
+      "link": "https://winmart.vn/products/doublerich-stam-hoa-hong-550ml--s10017412?storeGroupCode=1998&storeCode=1535"
+    },
+    {
+      "name": "Kem đánh răng trẻ em Colgate Minions 80g",
+      "link": "https://winmart.vn/products/colgate-kdr-tre-em-kid-minion-80g--s10625598?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa tắm Dove dưỡng ẩm chuyên sâu chai 500g",
+      "link": "https://winmart.vn/products/dove-sua-tam-duong-am-chuyen-sau-500g--s10170929?storeCode=1645&storeGroupCode=1998"
+    },
+    {
+      "name": "Bộ 3 bàn chải P/S muối tre chăm sóc nướu",
+      "link": "https://winmart.vn/products/ps-ban-chai-danh-rang-muoi-tre-bo-3--s10161876?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Bàn chải đánh răng Closeup Precision lông chải siêu mềm",
+      "link": "https://winmart.vn/products/closeup-ban-chai-danh-rang-vuot-troi--s10615653?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa rửa mặt Hazeline yến mạch dâu tằm sáng da 100g",
+      "link": "https://winmart.vn/products/hazeline-srm-yen-mach-dau-tam-100g--s10628535?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Lăn ngăn mùi ngọc trai đẹp quyến rũ Nivea 50ml",
+      "link": "https://winmart.vn/products/nivea-83735-lkm-nu-ngoc-trai-50ml--s10018709?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước hoa hồng Pond's làm sáng da chai 150ml",
+      "link": "https://winmart.vn/products/ponds-nuoc-hoa-hong-l.sang-da-wb-150ml--s10017493?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "NIVEA Nước tẩy trang ngừa mụn 400ml",
+      "link": "https://winmart.vn/products/nivea-nuoc-tay-trang-ngua-mun-400ml--s10171368?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Ô mai mơ gừng Hồng Lam 200g",
+      "link": "https://winmart.vn/products/hong-lam-o-mai-mo-gung-200g-ds--s10005048?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Miến gà Phú Hương, thùng 24 gói, 53g",
+      "link": "https://online.mmvietnam.com/product/mien-ga-phu-huong-thung-24-goi-53g.html?atm_term=mi%E1%BA%BFn%20%C4%83n%20li%E1%BB%81n"
+    },
+    {
+      "name": "Phở gà Hà Nội Cung Đình, thùng 30 gói, 68g",
+      "link": "https://online.mmvietnam.com/product/pho-ga-ha-noi-cung-dinh-thung-30-goi-68g.html?atm_term=ph%E1%BB%9F%20h%C3%A0%20n%E1%BB%99i%20cung%20%C4%91%C3%ACnh"
+    },
+    {
+      "name": "Nước lau kính Sunlight siêu nhanh sạch trong suốt 520ml",
+      "link": "https://winmart.vn/products/sunlight-nuoc-lau-kinh-sieu-nhanh-520ml--s10171186?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa tắm gội toàn thân Johnson's mềm mịn như bông 500ml",
+      "link": "https://winmart.vn/products/johnson-baby-tam-goi-tt-top-to-toe-500ml--s10625583?storeCode=1531&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước mắm Nam Ngư cao cấp ủ chượp và đóng chai tại Phú Quốc chai 500ml",
+      "link": "https://winmart.vn/products/nam-ngu-nuoc-mam-ca-com-tuoi-500ml--s10236564?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Gạo nếp Vinaseed hoa vàng đặc biệt 2kg",
+      "link": "https://winmart.vn/products/vinaseed-gao-nep-hoa-vang-db-2kg--s10605190?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Gạo Ngọc Nương ST 25 đặc sản 3Kg",
+      "link": "https://winmart.vn/products/ngoc-nuong-gao-st-25-dac-san-3kg-vns--s10141993?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Gạo ST25 Giống Cây Trồng TW túi 3kg",
+      "link": "https://winmart.vn/products/vinaseed-gao-st25-tui-3kg--s10141040?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Trà Ice tea vị đào Lipton hộp 240g",
+      "link": "https://winmart.vn/products/lipton-ice-tea-dao-1612g-t30--s10012910?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bánh quy bơ Marika vị tự nhiên 432g",
+      "link": "https://winmart.vn/products/marika-banh-quy-bo-tu-nhien-432gr-t4--s10193895?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bánh quy thập cẩm Cosy Socola 378g",
+      "link": "https://winmart.vn/products/cosy-banh-quy-tc-socola-atd-390g--s10616459?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bánh quy thập cẩm bơ sữa Cosy 378g",
+      "link": "https://winmart.vn/products/cosy-banh-quy-bo-tc-bo-sua-atv-390g--s10196294?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bánh quy Tresor Dore hộp 600g",
+      "link": "https://winmart.vn/products/tresor-dore-banh-600gx4--s10013612?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Kẹo Socola Ferrero Rocher 375g",
+      "link": "https://winmart.vn/products/ferrero-keo-socola-rocher-375g--s10015253?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Hạt điều rang muối Minh Việt vỏ hạt to 400g",
+      "link": "https://winmart.vn/products/minh-viet-hat-dieu-r.muoi-vo-hat-to-400g--s10015769?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Hạt Macadamia Nữ Hoàng Hạt 250g",
+      "link": "https://winmart.vn/products/nu-hoang-hat-macadamia-250g--s10602176?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Hạt hạnh nhân Pam’s 250g",
+      "link": "https://winmart.vn/products/pams-hat-hanh-nhan-250g--s10602173?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bột giặt ARIEL đam mê túi 650g",
+      "link": "https://winmart.vn/products/ariel-bot-giat-dam-me-tui-650g--s10019562?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước xả vải Comfort hương nước hoa thiên nhiên tinh tế túi 1.8L",
+      "link": "https://winmart.vn/products/comfort-nx-cs-c.sau-n.hoa-tn-sofia-18l--s10161842?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nước xả vải Downy hương nắng mai túi 2,3L",
+      "link": "https://winmart.vn/products/downy-nuoc-xa-huong-nang-mai-2.3l--s10600006?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Lon Ensure Gold Green Health Đạm thực vật 850g",
+      "link": "https://winmart.vn/products/ensure-gold-sb-dam-thuc-vat-800g--s10141648?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa thanh trùng Dalat Milk không đường 950ml",
+      "link": "https://winmart.vn/products/dalat-milk-sua-thanh-trung-k.duong-950ml--s10005240?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Găng tay tự hủy sinh học Green Eco size L (Hộp 100 cái)",
+      "link": "https://winmart.vn/products/stahaus-gang-tay-thsh-size-l-100chop--s10311415?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Túi đựng thực phẩm tự hủy sinh học HomeDeli 17*28*100 Cái",
+      "link": "https://winmart.vn/products/homedeli-tui-dung-tp-thsh-1728100-cai--s10197087?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Vỉ 2 Pin Max Energizer E92 BP2 size AAA",
+      "link": "https://winmart.vn/products/energizer-pin-max-e92-bp2-size-aaa--s10027648?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Vỉ 2 Pin Energizer max E91 BP2 AA",
+      "link": "https://winmart.vn/products/energizer-pin-max-e91-bp2-size-aa--s10027650?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Nấm hương Đông Nam Việt 200g",
+      "link": "https://winmart.vn/products/dong-nam-viet-nam-huong-200g--s10627955?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Hạt lạc nhân Thu Dung 500g",
+      "link": "https://winmart.vn/products/thu-dung-hat-lac-nhan-500g--s10010435?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Hạt sen Thu Dung gói 500g",
+      "link": "https://winmart.vn/products/thu-dung-hat-sen-thu-dung-goi-500g--s10010319?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa rửa mặt Pond's sáng da sạch sâu tuýp 100g",
+      "link": "https://winmart.vn/products/ponds-srm-sach-sau-pure-bright-100g--s10086759?storeGroupCode=1998&storeCode=1535"
+    },
+    {
+      "name": "Giấy vệ sinh Hà Nội 6 cuộn 3 lớp có lõi",
+      "link": "https://winmart.vn/products/ha-noi-giay-ve-sinh-6-cuon-3-lop-co-loi--s10613616?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Khăn giấy lụa 2 lớp Elene gói 260 tờ",
+      "link": "https://winmart.vn/products/elene-khan-giay-lau-mat-260-to--s10020501?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Khăn ướt không mùi Mamamy 100 tờ",
+      "link": "https://winmart.vn/products/mamamy-khan-uot-ve-sinh-100-to-khong-mui--s10020515?storeCode=1535&storeGroupCode=1998"
+    },
+    {
+      "name": "Bánh quy bơ LU Pháp 505g/540g",
+      "link": "https://online.mmvietnam.com/product/banh-quy-bo-phap-lu-540g.html?atm_term=ph%C3%A1p%20lu"
+    },
+    {
+      "name": "Sữa dinh dưỡng pha sẵn GrowPLUS suy dinh dưỡng, lốc 4 hộp, 180ml",
+      "link": "https://online.mmvietnam.com/product/sua-dinh-duong-pha-san-growplus-suy-dinh-duong-loc-4-hop-180ml.html?atm_term=growplus"
+    },
+    {
+      "name": "Lốc 4 hộp sữa dinh dưỡng pha sẵn NutiFood Grow Plus+ vani hộp 110ml",
+      "link": "https://www.bachhoaxanh.com/sua-bot-cong-thuc/sbps-growplus-suy-dinh-duong-110ml-loc"
+    },
+    {
+      "name": "Thùng 36 hộp sữa đậu nành Fami Canxi 200ml",
+      "link": "https://www.bachhoaxanh.com/sua-tu-hat/sdn-fami-canxi-hop-200ml-thung"
+    },
+    {
+      "name": "Mì Omachi xốt bò hầm, thùng 30 gói, 80g/81g",
+      "link": "https://online.mmvietnam.com/product/mi-dinh-duong-khoai-tay-omachi-xot-bo-ham-thung-30-goi-80g.html?atm_term=omachi"
+    },
+    {
+      "name": "Sữa Milo UHT có đường, thùng 48 hộp, 115ml/110ml",
+      "link": "https://online.mmvietnam.com/product/sua-milo-uht-co-duong-thung-48-hop-115ml-110ml.html?atm_term=s%E1%BB%AFa%20milo"
+    },
+    {
+      "name": "Nước giặt Omo bền đẹp cửa trước túi 2,9kg/2,8kg",
+      "link": "https://winmart.vn/products/omo-ng-ben-dep-cua-truoc-tui-29kg28kg--s10161177?storeCode=1590&storeGroupCode=1998"
+    },
+    {
+      "name": "Sữa tiệt trùng TH True Milk ít đường, lốc 4 hộp, 180ml\n",
+      "link": "https://online.mmvietnam.com/product/sua-tuoi-tiet-trung-th-true-milk-it-duong-loc-4-hop-180ml.html?atm_term=th%20true%20milk"
+    },
+    {
+      "name": "Sữa chua uống lên men hương kem dâu Lof Kun chai 85mlx6",
+      "link": "https://sieuthithanhdo.vn/sua-chua-uong-kun-huong-dau-chai-85mlx68"
+    }
+  ]
   function extractIds() {
     const input = document.getElementById('jsonInput1').value;
     const output = document.getElementById('idResult');
@@ -133,7 +666,6 @@
         addItem(item.id);
      })
 
-      output.textContent = JSON.stringify(ids, null, 2);
 
 
 
@@ -200,7 +732,7 @@ async  function collectData() {
              
                 return {
                 thumbnail: product[0].snapVariant.thumbnail[0],
-                productId: product[0].id,
+                productId: product[0].snapProduct.id,
                 createdAt: (new Date(order.createdAt)).toLocaleDateString('vi-VN'),
                 productName: product[0].snapProduct.name,
                 quantity:product[0].quantity,
@@ -260,7 +792,8 @@ async  function collectData() {
             { header: "Hình ảnh", key: "image", width: 20 },
             { header: "Giá", key: "price", width: 15 },
             { header: "Số lượng", key: "quantity", width: 15 },
-            { header: "Tổng bán", key: "sum", width: 15 }
+            { header: "Tổng bán", key: "sum", width: 15 },
+            { header: "Link sản phẩm", key: "link", width: 15 }
           ];
           // Style header đẹp
           const headerRow = sheet.getRow(1);
@@ -301,39 +834,19 @@ async  function collectData() {
 
           for (let i = 0; i < orders.length; i++) {
             const item = orders[i];
-
+            const productLink =  winmarts.find(product => product.name == item.productName).link;
             sheet.addRow({
               STT: i + 1,
               name: item.productName || "",
               price: item.productPrice || 0,
+              image: item.thumbnail
+            ? { text: "Xem ảnh", hyperlink: item.thumbnail } : "",
               quantity: item.quantity || 0,
-              sum: (item.productPrice || 0) * (item.quantity || 0)
+              sum: (item.productPrice || 0) * (item.quantity || 0),
+              link: productLink ? {text: productLink, hyperlink:productLink } : ""
             });
 
             // Chèn ảnh
-            if (item.thumbnail) {
-              try {
-                const base64 = await toBase64(item.thumbnail);
-
-                const imageId = workbook.addImage({
-                  base64: base64,
-                  extension: "png",
-                });
-
-                sheet.addImage(imageId, {
-                  tl: { col: 2.2, row: rowIndex - 0.8 },
-                  ext: { width: 70, height: 70 },
-                });
-
-                sheet.getRow(rowIndex).height = 60;
-
-              } catch (e) {
-                console.log(e);
-                
-                console.log("Không tải được ảnh:", item.image);
-              }
-            }
-
             rowIndex++;
           }
           sheet.eachRow((row, rowNumber) => {
