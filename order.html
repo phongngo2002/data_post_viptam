@@ -711,6 +711,26 @@ async function toBase64(url) {
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     }
+function groupByProductCode(data) {
+  const result = Object.values(
+    data.reduce((acc, item) => {
+      const key = item.productId;
+
+      if (!acc[key]) {
+        acc[key] = {
+          ...item,
+          quantity: 0,
+        };
+      }
+
+      acc[key].quantity += Number(item.quantity || 0);
+
+      return acc;
+    }, {})
+  );
+
+  return result;
+}
 async  function collectData() {
     const items = document.querySelectorAll('.json-item');
     const output = document.getElementById('result2');
@@ -740,6 +760,7 @@ async  function collectData() {
                 pDoneId:order.customer.pDoneId,
                 phoneNumber: infoCustomer[0].snapAddress.telephone,
                 orderCode: order.orderNumber,
+                shipPayDone: order.payment.vndPaidAmount == order.vndTotalPrice && infoCustomer[0].shippingType =='ORDER',
                 name: infoCustomer[0].snapAddress.name,
                 address: infoCustomer[0].shippingType =='PICKUP' ? 
                 infoCustomer[0]?.snapWarehouse.address 
@@ -789,7 +810,7 @@ async  function collectData() {
           sheet.columns = [
             { header: "STT", key: "STT", width: 10 },
             { header: "Tên sản phẩm", key: "name", width: 30 },
-            { header: "Hình ảnh", key: "image", width: 20 },
+            { header: "Hình ảnh", key: "image", width: 15 },
             { header: "Giá", key: "price", width: 15 },
             { header: "Số lượng", key: "quantity", width: 15 },
             { header: "Tổng bán", key: "sum", width: 15 },
@@ -806,7 +827,7 @@ async  function collectData() {
 
           headerRow.alignment = {
             vertical: 'middle',
-            horizontal: 'center'
+            horizontal: 'center',
           };
 
           headerRow.height = 25;
@@ -829,24 +850,44 @@ async  function collectData() {
           // Style header
           sheet.getRow(1).font = { bold: true };
           sheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+          sheet.getColumn(3).width = 15; // cột ảnh (C)
 
           let rowIndex = 2;
-
-          for (let i = 0; i < orders.length; i++) {
-            const item = orders[i];
+          const newOrders = groupByProductCode(orders);
+          for (let i = 0; i < newOrders.length; i++) {
+            const item = newOrders[i];
             const productLink =  winmarts.find(product => product.name == item.productName).link;
             sheet.addRow({
               STT: i + 1,
               name: item.productName || "",
               price: item.productPrice || 0,
-              image: item.thumbnail
-            ? { text: "Xem ảnh", hyperlink: item.thumbnail } : "",
               quantity: item.quantity || 0,
               sum: (item.productPrice || 0) * (item.quantity || 0),
               link: productLink ? {text: productLink, hyperlink:productLink } : ""
             });
+            sheet.getRow(rowIndex).height = 80;
 
             // Chèn ảnh
+                if (item.thumbnail) {
+                try {
+                  const base64 = await toBase64(item.thumbnail);
+
+                  const imageId = workbook.addImage({
+                    base64: base64,
+                    extension: "png",
+                  });
+
+                  sheet.addImage(imageId, {
+                    tl: { col: 2, row: rowIndex - 1 },
+                    br: {col: 3 , row: rowIndex},
+                  });
+
+                  sheet.getRow(rowIndex).height = 60;
+
+                } catch (e) {
+                  console.log("Không tải được ảnh:", item.thumbnail);
+                }
+              }
             rowIndex++;
           }
           sheet.eachRow((row, rowNumber) => {
@@ -868,6 +909,95 @@ async  function collectData() {
           // Format tiền
           sheet.getColumn("price").numFmt = '#,##0 "₫"';
           sheet.getColumn("sum").numFmt = '#,##0 "₫"';
+          const sheet2 = workbook.addWorksheet("Danh sách đơn hàng");
+          sheet2.columns = [
+            { header: "STT", key: "STT", width: 10 },
+            { header: "Ngày tạo đơn", key: "createDate", width: 15 },
+            { header: "Mã sản phẩm", key: "productId", width: 15 },
+            { header: "Tên sản phẩm", key: "productName", width: 30 },
+            { header: "Số lượng", key: "quantity", width: 10 },
+            { header: "Mã PDONE", key: "pdoneID", width: 20 },
+            { header: "Mã đơn hàng", key: "orderCode", width: 20 },
+            { header: "Tên khách hàng", key: "customerName", width: 20 },
+            { header: "Số điện thoại", key: "phoneNumber", width: 20 },
+            { header: "Địa chỉ", key: "address", width: 30 },
+            { header: "Phương thức giao hàng", key: "shipcase", width: 20 },
+            { header: "Phí ship", key: "shipFee", width: 20 },
+            { header: "Mô tả", key: "desc", width: 20 },
+            { header: "Ghi chú", key: "note", width: 20 },
+
+
+
+
+
+          ];
+            const headerRowSheet2 = sheet2.getRow(1);
+            headerRowSheet2.font = {
+            bold: true,
+            size: 12,
+            color: { argb: 'FFFFFF' }
+          };
+          headerRowSheet2.alignment = {
+            vertical: 'middle',
+            horizontal: 'center'
+          };
+
+          headerRowSheet2.height = 25;
+          headerRowSheet2.eachCell((cell) => {
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: '4F81BD' }
+            };
+
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' }
+            };
+          });
+          sheet2.getRow(1).font = { bold: true };
+          sheet2.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+          let rowIndex2 = 2;
+          for (let i = 0; i < orders.length; i++) {
+            const item = orders[i];
+            sheet2.addRow({
+              STT: i + 1,
+             createDate: item.createdAt,
+             productId: item.productId,
+             productName: item.productName,
+             quantity: item.quantity,
+             pdoneID: item.pDoneId,
+             orderCode: item.orderCode,
+             customerName: item.name,
+             phoneNumber: item.phoneNumber,
+             address: item.address,
+             shipcase: item.shipperType,
+             shipFee: item.shipPayDone ? 'Trả ship bằng D-one' : item.shippingFee,
+             desc: item.desc,
+             note: item.note
+            });
+
+            // Chèn ảnh
+            rowIndex2++;
+          }
+            sheet2.eachRow((row, rowNumber) => {
+              row.eachCell((cell) => {
+                cell.alignment = {
+                  vertical: 'middle',
+                  horizontal: 'center',
+                  wrapText: true
+                };
+
+                cell.border = {
+                  top: { style: 'thin' },
+                  left: { style: 'thin' },
+                  bottom: { style: 'thin' },
+                  right: { style: 'thin' }
+                };
+              });
+            });
           const buffer = await workbook.xlsx.writeBuffer();
           saveAs(new Blob([buffer]), "nhap-hang-tra-khach - "+formatDate(new Date())+".xlsx");
         }
