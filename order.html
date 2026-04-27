@@ -748,7 +748,6 @@ async  function collectData() {
       const orders = result.map(res => {
              const {order} = res;
              const {items: product,shipments: infoCustomer} = order
-             console.log(product[0].snapVariant.thumbnail[0]);
              
                 return {
                 thumbnail: product[0].snapVariant.thumbnail[0],
@@ -760,7 +759,7 @@ async  function collectData() {
                 pDoneId:order.customer.pDoneId,
                 phoneNumber: infoCustomer[0].snapAddress.telephone,
                 orderCode: order.orderNumber,
-                shipPayDone: order.payment.vndPaidAmount == order.vndTotalPrice && infoCustomer[0].shippingType =='ORDER',
+                shipPayDone: order.payment.vndPaidAmount == order.vndTotalPrice && infoCustomer[0].shippingType =='UNKNOWN',
                 name: infoCustomer[0].snapAddress.name,
                 address: infoCustomer[0].shippingType =='PICKUP' ? 
                 infoCustomer[0]?.snapWarehouse.address 
@@ -804,7 +803,7 @@ async  function collectData() {
         }).join("")
 
           const workbook = new ExcelJS.Workbook();
-          const sheet = workbook.addWorksheet("Danh sách sản phẩm");
+          const sheet = workbook.addWorksheet(`Danh sách sản phẩm ${orders.length ? orders[0].createdAt.replaceAll("/","-") : ""}`);
 
           // Header
           sheet.columns = [
@@ -861,6 +860,7 @@ async  function collectData() {
               STT: i + 1,
               name: item.productName || "",
               price: item.productPrice || 0,
+              image: item.thumbnail ? { text: "Xem ảnh", hyperlink: item.thumbnail } : "",
               quantity: item.quantity || 0,
               sum: (item.productPrice || 0) * (item.quantity || 0),
               link: productLink ? {text: productLink, hyperlink:productLink } : ""
@@ -868,26 +868,6 @@ async  function collectData() {
             sheet.getRow(rowIndex).height = 80;
 
             // Chèn ảnh
-                if (item.thumbnail) {
-                try {
-                  const base64 = await toBase64(item.thumbnail);
-
-                  const imageId = workbook.addImage({
-                    base64: base64,
-                    extension: "png",
-                  });
-
-                  sheet.addImage(imageId, {
-                    tl: { col: 2, row: rowIndex - 1 },
-                    br: {col: 3 , row: rowIndex},
-                  });
-
-                  sheet.getRow(rowIndex).height = 60;
-
-                } catch (e) {
-                  console.log("Không tải được ảnh:", item.thumbnail);
-                }
-              }
             rowIndex++;
           }
           sheet.eachRow((row, rowNumber) => {
@@ -909,7 +889,7 @@ async  function collectData() {
           // Format tiền
           sheet.getColumn("price").numFmt = '#,##0 "₫"';
           sheet.getColumn("sum").numFmt = '#,##0 "₫"';
-          const sheet2 = workbook.addWorksheet("Danh sách đơn hàng");
+          const sheet2 = workbook.addWorksheet(`Danh sách đơn hàng ${orders.length ? orders[0].createdAt.replaceAll("/","-") : ''}`);
           sheet2.columns = [
             { header: "STT", key: "STT", width: 10 },
             { header: "Ngày tạo đơn", key: "createDate", width: 15 },
