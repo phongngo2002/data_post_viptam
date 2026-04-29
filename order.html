@@ -855,7 +855,7 @@ async  function collectData() {
           const newOrders = groupByProductCode(orders);
           for (let i = 0; i < newOrders.length; i++) {
             const item = newOrders[i];
-            const productLink =  winmarts.find(product => product.name == item.productName).link;
+            const productLink =  winmarts.find(product => product.name == item.productName).link || "";
             sheet.addRow({
               STT: i + 1,
               name: item.productName || "",
